@@ -6,24 +6,27 @@ import { PeopleList } from "../../components/PeoplePage/PeopleList/PeopleList";
 
 export const PeoplePage = () => {
   const [people, setPeople] = useState(null);
+  const [errorApi, setErrorApi] = useState(false);
 
   const getResource = async (url) => {
     const res = await getApiResource(url);
 
-    const peopleList = res.results.map(({ name, url }) => {
-      const id = getPeopleId(url);
-      const img = getPeopleImage(id);
-      console.log(img);
-      console.log(id);
+    if (res) {
+      const peopleList = res.results.map(({ name, url }) => {
+        const id = getPeopleId(url);
+        const img = getPeopleImage(id);
 
-      return {
-        name,
-        url,
-        img
-      };
-    });
-
-    setPeople(peopleList);
+        return {
+          name,
+          url,
+          img,
+        };
+      });
+      setPeople(peopleList);
+      setErrorApi(false);
+    } else {
+      setErrorApi(true);
+    }
   };
 
   useEffect(() => {
@@ -31,8 +34,15 @@ export const PeoplePage = () => {
   }, []);
   return (
     <>
-      {people && <PeopleList people={people} />
-      }
-    </>
-  );
+    {errorApi ? (
+      <h2>Error</h2>
+    ) : (
+      <>
+        <h1>Navigation</h1>
+        {people && <PeopleList people={people} />}
+      </>
+    )}
+  </>
+  )
+
 };
